@@ -10,11 +10,13 @@ import (
 type CreateVoucherInput struct {
 	Label       string `json:"label" binding:"required"`
 	Description string `json:"description" binding:"required"`
+	Important   bool   `json:"important"`
 }
 
 type UpdateVoucherInput struct {
 	Label       string `json:"label"`
 	Description string `json:"description"`
+	Important   bool   `json:"important"`
 }
 
 // GET /vouchers
@@ -23,7 +25,7 @@ func FindVouchers(c *gin.Context) {
 	var vouchers []models.Voucher
 	models.DB.Find(&vouchers)
 
-	c.JSON(http.StatusOK, gin.H{"data": vouchers})
+	c.JSON(http.StatusOK, gin.H{"vouchers": vouchers})
 }
 
 // GET /vouchers/:id
@@ -36,7 +38,7 @@ func FindVoucher(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": voucher})
+	c.JSON(http.StatusOK, gin.H{"voucher": voucher})
 }
 
 // POST /vouchers
@@ -50,10 +52,11 @@ func CreateVoucher(c *gin.Context) {
 	}
 
 	// Create voucher
-	voucher := models.Voucher{Label: input.Label, Description: input.Description}
+	voucher := models.Voucher{
+		Label: input.Label, Description: input.Description, Important: input.Important}
 	models.DB.Create(&voucher)
 
-	c.JSON(http.StatusOK, gin.H{"data": voucher})
+	c.JSON(http.StatusOK, gin.H{"voucher": voucher})
 }
 
 // PATCH /vouchers/:id
@@ -75,7 +78,7 @@ func UpdateVoucher(c *gin.Context) {
 
 	models.DB.Model(&voucher).Updates(input)
 
-	c.JSON(http.StatusOK, gin.H{"data": voucher})
+	c.JSON(http.StatusOK, gin.H{"voucher": voucher})
 }
 
 // DELETE /vouchers/:id
@@ -90,5 +93,5 @@ func DeleteVoucher(c *gin.Context) {
 
 	models.DB.Delete(&voucher)
 
-	c.JSON(http.StatusOK, gin.H{"data": true})
+	c.JSON(http.StatusOK, gin.H{"response": true})
 }
